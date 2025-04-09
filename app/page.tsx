@@ -5,16 +5,20 @@ import Sidebar from "@/components/dashboard/sidebar";
 import Header from "@/components/dashboard/header";
 import Courses from "@/components/dashboard/courses";
 import Footer from "@/components/dashboard/footer";
+import { getCourses } from "@/lib/get-courses";
 
 export default async function Home() {
   const { userId } = await auth();
   
   if (!userId) {
-    redirect("/");
+    redirect("/sign-in");
   }
 
   const user = await currentUser();
   const userName = user?.firstName || "User";
+  
+  // Fetch courses with progress for the current user
+  const courses = await getCourses(userId);
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -26,7 +30,7 @@ export default async function Home() {
       </div>
       <main className="md:pl-56 pt-[80px] pb-[60px] flex-grow">
         <Header userName={userName} />
-        <Courses />
+        <Courses courses={courses} />
       </main>
       <div className="h-[60px] fixed inset-x-0 bottom-0 md:pl-56 z-40">
         <Footer />
